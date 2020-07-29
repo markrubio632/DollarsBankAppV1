@@ -1,52 +1,70 @@
 package com.dollarsbank.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 //this is the daoimpl
-public class SavingsAccount extends Account{
-	
-	private Account acc;
-	
-	private int currentBalance;
-	private int deposit;
-	private int withdraw;
-	private int balance;
-	//maybe needed in controller instead?
-	private int accountName;
+public class SavingsAccount extends Account {
 
-	@Override
-	public String fundTransfer() {
-		// TODO Auto-generated method stub
+	// may have to change these to public to use in other methods/classes
+	private Account acc;
+
+	private Customer cust;
+
+	public String fundTransfer(double balance, double withdraw, double deposit, String custAccName) {
+
+		if (custAccName.equals(cust.getCustAccName())) {
+
+		}
+
 		return null;
 	}
 
-	@Override
-	public int depositAmounts() {
+	public double depositAmounts(double balance, double deposit) {
 		// TODO Auto-generated method stub
-		
-		balance = currentBalance + deposit;
-		
+
+		balance = cust.getCustBalance() + deposit;
+		cust.setCustBalance(balance);
 		return balance;
 	}
 
 	@Override
-	public int withdrawAmounts() {
-		// TODO Auto-generated method stub
+	public void withdrawAmounts(double balance, double withdraw) {
 		
-		//also to make sure it wont allow users to withdraw more than what is available
+		//THIS MAY NEED TO BE A PUBLIC DOUBLE
 		
-		balance = currentBalance - withdraw;
-		
-		return balance;
+		if(balance >= withdraw) {
+			balance = cust.getCustBalance() - withdraw;
+		cust.setCustBalance(balance);
+		}
+		else {
+			System.out.println("Overdraw not allowed. Please try again with a different amount.");
+			System.out.println("Current balance: " + balance);
+		}
 	}
 
-	@Override
-	public List<Customer> transList() {
-		//store lists of transactions
-		//this uses the function from the abstract class Account.java
-		//a param will have to pass through for custAccountName
-		List<Customer> custList = (List<Customer>) acc.transList();
+	public List<Customer> transList(String custAccName) {
+		// store lists of transactions
+		// this uses the function from the abstract class Account.java
+		List<Customer> custList = (List<Customer>) acc.transList(cust.custAccName);
 		return custList;
 	}
-	
+
+	@Override
+	public Customer addCustomer() {
+
+		Customer customer = new Customer();
+
+		return customer;
+	}
+	@Override
+	public List transHistory() {
+		// TODO Auto-generated method stub
+		//when adding in a new user add a timestamp to associate with
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+		System.out.println(timeStamp);
+		return null;
+	}
+
 }
