@@ -1,25 +1,15 @@
 package com.dollarsbank.model;
 
-import java.util.List;
-
 //this one is an abstraction
 public abstract class Account {
-	//this is the dao
-	//insert methods for actions (i.e. transfer funds btwn account)
 	
-	public abstract Customer addCustomer();
+	public abstract String fundTransfer(double Balance, double amount, String custAccName);
 	
-	//public abstract Customer addCustomer();
+	public abstract double deposit(double amount);
 	
-	public abstract String fundTransfer(double Balance, double withdraw, 
-			double deposit, String custAccName);
+	public abstract double withdraw(double amount);
 	
-	public abstract double depositAmounts(double balance, double deposit);
+	public abstract void printList();
 	
-	public abstract void withdrawAmounts(double balance, double withdraw);
-	
-	//get Customer accountName and pass through as a param
-	public abstract List<Customer> transList(String custAccName);
-	
-	public abstract List transHistory();
+	public abstract void transHistory(String text);
 }
