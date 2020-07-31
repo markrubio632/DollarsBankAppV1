@@ -28,7 +28,7 @@ public class DollarsBankController {
 
 	static List<Customer> jeeves = new ArrayList<Customer>();
 	static {
-		jeeves.add(new Customer("Josh", "Dimmsdale Dimmadome", "928-888-4203", 117, "jeeves", 320223, 1020201, "[117-J]"));
+		jeeves.add(new Customer("Josh", "Dimmsdale Dimmadome", "928-888-4203", 117, "jeeves", 320223, 1020, "[117-J]"));
 	}
 
 	// ALL PRINT BLOCKS SHOULD PROB GO TO CONSOLE PRINTER UTIL PAGE
@@ -205,14 +205,19 @@ public class DollarsBankController {
 			
 			amount = sc.nextDouble();
 			
-			System.out.println("current balance is: " + balance);
-			
+			System.out.println("current balance is: " + jeeves.get(iterator).getCustBalance());
+			balance = jeeves.get(iterator).getCustBalance();
 			
 			if(amount >=0) {
 				balance += save.deposit(amount);
 				jeeves.get(iterator).setCustBalance(balance);
 				System.out.println("your new balance is: "+ jeeves.get(iterator).getCustBalance());
-				save.transHistory(bankName);
+				//[trans saved, 2020.07.30.20.38.49] is output, but doesnt save properly
+				save.addHistory("transaction saved ");
+				
+				jeeves.get(iterator);
+				save.printList(jeeves.get(iterator));
+				
 				custCommInterface(iterator);
 			}
 			
@@ -223,13 +228,17 @@ public class DollarsBankController {
 			
 			amount = sc.nextDouble();
 			
-			System.out.println("current balance is: " + balance);
+			System.out.println("current balance is: " + jeeves.get(iterator).getCustBalance());
+			balance = jeeves.get(iterator).getCustBalance();
 			
 			if(amount >=0 && amount <= jeeves.get(iterator).getCustBalance()) {
 				balance += save.withdraw(amount);
 				jeeves.get(iterator).setCustBalance(balance);
+				
 				System.out.println("withdraw success, your new balance is: "+ jeeves.get(iterator).getCustBalance());
-				save.printList();
+				
+				//save.printList(jeeves.get(iterator).toString());
+				save.printList(jeeves.get(iterator));
 				custCommInterface(iterator);
 			}
 			else {
@@ -247,15 +256,23 @@ public class DollarsBankController {
 		} else if (commChosen == 3) {
 			save.fundTransfer(balance, withdraw, deposit, cust.getCustAccName());
 		}
-		//this needs to properly save the timestamp and write to the list
+		
 		else if (commChosen == 4) {
-			save.printList();
+			save.printList(jeeves.get(iterator));
+			System.out.println(save.getTransHistory().toString());
+			custCommInterface(iterator);
+		} 
+		
+		else if (commChosen == 5) {
+			save.getTransHistory();
+			System.out.println(save.getTransHistory());
 			
-			
-			
-		} else if (commChosen == 5) {
-			save.printList();
-		} else if (commChosen == 6) {
+			save.printList(jeeves.get(iterator));
+			//save.printList(jeeves.get(iterator).toString());
+			custCommInterface(iterator);
+		} 
+		
+		else if (commChosen == 6) {
 			try {
 				System.out.println("Singing out of current user...");
 				Thread.sleep(2000);

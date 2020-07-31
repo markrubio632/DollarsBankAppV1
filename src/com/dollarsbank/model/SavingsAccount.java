@@ -10,19 +10,19 @@ public class SavingsAccount extends Account {
 	private Customer cust;
 
 	private double balance;
-	
+
 	String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-	
+
 	private List<String> transHistory = new ArrayList<String>();
-	
-	public List<String> getTransHistory(){
+
+	public List<String> getTransHistory() {
 		return transHistory;
 	}
-	
-	public void setTransHistory(List<String> transHistory){
+
+	public void setTransHistory(List<String> transHistory) {
 		this.transHistory = transHistory;
 	}
-	
+
 	public String fundTransfer(double balance, double withdraw, double deposit, String custAccName) {
 
 		if (custAccName.equals(cust.getCustAccName())) {
@@ -32,38 +32,48 @@ public class SavingsAccount extends Account {
 		return null;
 	}
 
-	//this print the list
-	public void printList(){
-		
-		for(String string : transHistory) {
-			System.out.println(string);
+	// this print the list
+	public void printList(Customer customer) {
+
+		for (String strong : transHistory) {
+			getTransHistory();
+			System.out.println(strong.toString());
 		}
-		
+
 	}
-	
-	//this adds to the list
+
+	// this adds to the list
 	@Override
-	public void transHistory(String text) {
-		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+	public void addHistory(String text) {
 		
 		if (transHistory.size() == 5) {
 			transHistory.remove(0);
+			System.out.println("removing index 0");
+			transHistory.add(text + "added at " + timeStamp);
+
+		} else {
+
 			transHistory.add(text + "added at " + timeStamp);
 		}
-		else {
-			transHistory.add(text);
-		}
-		
+
 	}
+
 	@Override
 	public String fundTransfer(double Balance, double amount, String custAccName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public double deposit(double amount) {
-		// TODO Auto-generated method stub
+		
+		if (transHistory.size() ==0) {
+			
+		}
+		else {
+			addHistory("Deposited " + amount + " as of " + timeStamp);
+		}
+		
 		balance += amount;
 		return balance;
 	}

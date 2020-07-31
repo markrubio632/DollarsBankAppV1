@@ -1,5 +1,6 @@
 package com.dollarsbank.model;
 
+
 //this one is an abstraction
 public abstract class Account {
 	
@@ -9,7 +10,7 @@ public abstract class Account {
 	
 	public abstract double withdraw(double amount);
 	
-	public abstract void printList();
+	public abstract void printList(Customer customer);
 	
-	public abstract void transHistory(String text);
+	public abstract void addHistory(String text);
 }
