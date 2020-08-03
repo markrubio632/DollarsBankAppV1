@@ -102,15 +102,14 @@ public class CustomerDaoImpl implements CustomerDao {
 	}
 
 	@Override
-	public int updateBalance(double custBalance, int custId) {
+	public int updateBalance(double bal, int custId) {
 
 		try {
 			conn = getConnection();
 			stmt = conn.prepareStatement("update bank_customers set custBalance=? where custId=" + custId);
-			stmt.setDouble(1,custBalance);
+			stmt.setDouble(1,bal);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;

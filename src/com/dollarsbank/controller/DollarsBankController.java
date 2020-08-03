@@ -27,6 +27,8 @@ public class DollarsBankController {
 	public static ConsolePrinterUtility cpu = new ConsolePrinterUtility();
 
 	Scanner sc = new Scanner(System.in);
+	
+	int user= 0;
 
 	static List<Customer> jeeves = new ArrayList<Customer>();
 	static {
@@ -142,19 +144,6 @@ public class DollarsBankController {
 		userPass = sc.nextLine();
 		cust.setCustPassword(userPass);
 		
-		//daoimpl.findAllCustomers();
-		
-		//this should find customers in DB and iterate through
-		/*
-		 * for(Customer custo : daoimpl.findAllCustomers()) { System.out.println(custo);
-		 * if (custo.getCustName().equalsIgnoreCase(userName) &&
-		 * custo.getCustPassword().equalsIgnoreCase(userPass)) { isLogged = true;
-		 * System.out.println("is logged is true in the loop"); break; } else { isLogged
-		 * = false; System.out.println("is logged is false in the loop"); } iterator++;
-		 * }
-		 */
-		
-
 		for (Customer customer : jeeves) {
 
 			System.out.println(customer);
@@ -163,6 +152,7 @@ public class DollarsBankController {
 					&& customer.getCustPassword().equalsIgnoreCase(userPass)) {
 				isLogged = true;
 				System.out.println("is logged is true in the loop");
+				user = jeeves.get(iterator).custId;
 				break;
 			} else {
 				isLogged = false;
@@ -192,7 +182,7 @@ public class DollarsBankController {
 		List<Customer> jeeves = daoimpl.findAllCustomers();
 		jeeves.get(iterator).toString();
 
-		double bal;
+		double bal = jeeves.get(iterator).getCustBalance();
 		double amount;
 		int custId;
 
@@ -210,17 +200,25 @@ public class DollarsBankController {
 			// balance = jeeves.get(iterator).getCustBalance();
 
 			if (amount >= 0) {
-
-				bal = jeeves.get(iterator).getCustBalance();
+				
 				bal += save.deposit(amount);
 				jeeves.get(iterator).setCustBalance(bal);
 				
+				jeeves.get(iterator).custBalance = bal;
+				
 				//this uses the person in the DB - test
-				daoimpl.updateBalance(jeeves.get(iterator).custBalance, customer.getCustId());
+				daoimpl.updateBalance(jeeves.get(iterator).custBalance, jeeves.get(iterator).custId);
 				
 				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
 				save.printList();
 
+				//for testing in DB
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				custCommInterface(iterator);
 			}
 			else {
@@ -242,7 +240,7 @@ public class DollarsBankController {
 				bal += save.withdraw(amount);
 				jeeves.get(iterator).setCustBalance(bal);
 				//this uses the person in the DB - test
-				daoimpl.updateBalance(jeeves.get(iterator).getCustBalance(), customer.getCustId());
+				daoimpl.updateBalance(bal, jeeves.get(iterator).getCustId());
 				
 				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
 				save.printList();

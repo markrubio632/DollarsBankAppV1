@@ -7,7 +7,7 @@ import java.util.List;
 
 //this is the daoimpl
 public class SavingsAccount extends Account {
-	private double balance;
+	private double bal;
 
 	String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
@@ -26,7 +26,7 @@ public class SavingsAccount extends Account {
 		
 			addHistory("Deposited " + amount + " as of " + timeStamp);
 
-		return balance += amount;
+		return bal += amount;
 
 	}
 
@@ -35,7 +35,7 @@ public class SavingsAccount extends Account {
 		
 		addHistory("Withdrew " + amount + " as of " + timeStamp);
 
-		return balance -= amount;
+		return bal -= amount;
 
 	}
 
@@ -44,7 +44,7 @@ public class SavingsAccount extends Account {
 		
 		addHistory("Withdrew " + amount + " and transferred to " + receiverName + " as of " + timeStamp);
 		
-		 balance -= amount;
+		 bal -= amount;
 		 //this amount should be used to add/subtract from accounts in controller
 		 return amount;
 	}
