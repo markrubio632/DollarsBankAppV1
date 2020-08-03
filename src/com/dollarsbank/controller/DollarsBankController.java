@@ -4,141 +4,133 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.dollarsbank.dao.CustomerDaoImpl;
 import com.dollarsbank.model.Customer;
 import com.dollarsbank.model.SavingsAccount;
+import com.dollarsbank.utility.ConsolePrinterUtility;
 
 public class DollarsBankController {
 	// this is the controller
 
 	SavingsAccount save;
 
-	// these are just for the fun capitals used in some UIs
-	private static final String businessName = "DOLLARSBANK";
-	public static final String welcome = "WELCOME";
-
-	public final String bankName = businessName;
+	CustomerDaoImpl daoimpl = new CustomerDaoImpl();
 
 	public int optChosen;
 	public int commChosen;
 	public double balance;
 	public double withdraw;
 	public double deposit;
+	public int iterator;
+
+	// displays output to user
+	public static ConsolePrinterUtility cpu = new ConsolePrinterUtility();
 
 	Scanner sc = new Scanner(System.in);
 
 	static List<Customer> jeeves = new ArrayList<Customer>();
 	static {
-		jeeves.add(new Customer("Josh", "Dimmsdale Dimmadome", "928-888-4203", 117, "jeeves", 320223, 1020, "[117-J]"));
+		CustomerDaoImpl daoimpl = new CustomerDaoImpl();
+		
+		jeeves.add(new Customer("Josh", "Dimmsdale Dimmadome", "928-888-4203", "jeeves", 320223, "[117-J]"));
+		
 	}
-
-	// ALL PRINT BLOCKS SHOULD PROB GO TO CONSOLE PRINTER UTIL PAGE
-
 	public void controllerRunner() throws InterruptedException {
 
 		while (true) {
-			introInterface();
-			creationInterface();
+			CustomerDaoImpl.getConnection();
+			//create database needs to be worked, for now working with an empty local
+			//daoimpl.createDatabase();
+			cpu.mainMenu();
+			try {
+				optChosen = sc.nextInt();
+				sc.nextLine();
+			} catch (Exception e) {
+
+			}
+			if (optChosen == 1) {
+				creationInterface();
+			} else if (optChosen == 2) {
+				loginInterface();
+				custCommInterface(iterator);
+			} else if (optChosen == 3) {
+				daoimpl.shutdownDatabase();
+				System.exit(0);
+			} else {
+				System.out.println("invalid option, please choose from the menu");
+				cpu.mainMenu();
+			}
 		}
 
-	}
-
-	public void introInterface() {
-
-		System.out.println(bankName + " Welcomes You!");
-		System.out.println("1. Create New Account");
-		System.out.println("2. Login");
-		System.out.println("3. Exit");
-		optChosen = sc.nextInt();
-		sc.nextLine();
 	}
 
 	public void creationInterface() throws InterruptedException {
-		// this will direct to creation of new account
-		if (optChosen == 1) {
+		Customer cust = new Customer();
+		
+		System.out.println("Enter Details for New Account");
 
-			Customer cust = new Customer();
-			System.out.println("custom created");
+		System.out.println("Customer Name: ");
+		cust.custName = sc.nextLine();
+		cust.setCustName(cust.getCustName());
 
-			// header for the UI
-			System.out.println("Enter Details for New Account");
+		System.out.println("Customer Address: ");
+		cust.custAddress = sc.nextLine();
+		cust.setCustAddress(cust.custAddress);
 
-			System.out.println("Customer Name: ");
-			// Scanner cn = new Scanner(System.in);
-			// cust.custName = cn.nextLine();
-			String name = "";
-			// System.out.println(name);
-			name = sc.nextLine();
-			// System.out.println(name);
-			cust.setCustName(name);
-			// System.out.println("name set");
+		System.out.println("Customer Contact Number: ");
+		cust.custPhone = sc.nextLine();
+		cust.setCustPhone(cust.custPhone);
 
-			System.out.println("Customer Address: ");
-			cust.custAddress = sc.nextLine();
-			cust.setCustAddress(cust.custAddress);
-			// may need set methods called to later get from memory
+		/*
+		 * System.out.println("Customer ID: "); cust.custId = sc.nextInt();
+		 * sc.nextLine(); cust.setCustId(cust.custId);
+		 */
 
-			System.out.println("Customer Contact Number: ");
-			cust.custPhone = sc.nextLine();
-			cust.setCustPhone(cust.custPhone);
-			// may need set methods called to later get from memory
+		System.out.println("Customer Password: ");
+		cust.custPassword = sc.nextLine();
+		cust.setCustPassword(cust.custPassword);
 
-			System.out.println("Customer ID: ");
-			cust.custId = sc.nextInt();
-			sc.nextLine();
-			cust.setCustId(cust.custId);
-			// may need set methods called to later get from memory
+		System.out.println("Customer Initial Deposit Amount: ");
+		cust.custBalance = sc.nextDouble();
+		sc.nextLine();
+		cust.setCustBalance(cust.custBalance);
 
-			System.out.println("Customer Password: ");
-			cust.custPassword = sc.nextLine();
-			cust.setCustPassword(cust.custPassword);
-			// may need set methods called to later get from memory
+		System.out.println("Customer Account Name: ");
+		cust.custAccName = sc.nextLine();
+		cust.setCustAccName(cust.custAccName);
 
-			System.out.println("Customer Initial Deposit Amount: ");
-			cust.custDeposAmount = sc.nextInt();
-			cust.custBalance = cust.custDeposAmount;
-			sc.nextLine();
-			cust.setCustDeposAmount(cust.custDeposAmount);
+		// add all the setters into a customer object list of jeeves
+		jeeves.add(new Customer(cust.getCustName(), cust.getCustAddress(), cust.getCustPhone(),
+				cust.getCustPassword(), cust.getCustBalance(), cust.getCustAccName()));
+		
+		//this saves the new user into the database
+		daoimpl.saveCustomer(cust);
+		System.out.println(cust);
 
-			// add all the setters into a customer object from a list
-			jeeves.add(new Customer(cust.getCustName(), cust.getCustAddress(), cust.getCustPhone(), cust.getCustId(),
-					cust.getCustPassword(), cust.getCustDeposAmount(), cust.getCustBalance(), cust.getCustAccName()));
-			
-			
-			System.out.println(jeeves.toString());
-
-			// may need set methods called to later get from memory
-			System.out.println("user successfully created, redirecting to login...");
-			try {
-				Thread.sleep(2000);
-				loginInterface();
-			} catch (InterruptedException e) {
-				// log the exception.
-			}
-		}
-		// this will go to login interface
-		else if (optChosen == 2) {
+		System.out.println("user successfully created, redirecting to login...");
+		try {
+			Thread.sleep(2000);
 			loginInterface();
+		} catch (InterruptedException e) {
+			// log the exception.
 		}
-		// if anything other than "1" or "2" is inserted
-		else {// this will put the thread to sleep for 2 seconds, then close program
-			try {
-				System.out.println("Exiting Program...");
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// log the exception.
-			}
-
-			System.exit(0);
-		}
-	}// end of the userInterface method
+	}/*
+		 * // this will go to login interface else if (optChosen == 2) {
+		 * loginInterface(); } // if anything other than "1" or "2" is inserted else {//
+		 * this will put the thread to sleep for 2 seconds, then close program try {
+		 * System.out.println("Exiting Program..."); Thread.sleep(2000); } catch
+		 * (InterruptedException e) { // log the exception. }
+		 * 
+		 * System.exit(0); } }// end of the userInterface method
+		 */
 
 	public void loginInterface() {
 		Customer cust = new Customer();
-
+		List<Customer> jeeves = daoimpl.findAllCustomers();
 		String userName = "";
 		String userPass = "";
 		Boolean isLogged = false;
-		int iterator = 0;
+		iterator = 0;
 
 		System.out.println("Enter Login Details");
 
@@ -149,12 +141,26 @@ public class DollarsBankController {
 		System.out.println("Password: ");
 		userPass = sc.nextLine();
 		cust.setCustPassword(userPass);
+		
+		//daoimpl.findAllCustomers();
+		
+		//this should find customers in DB and iterate through
+		/*
+		 * for(Customer custo : daoimpl.findAllCustomers()) { System.out.println(custo);
+		 * if (custo.getCustName().equalsIgnoreCase(userName) &&
+		 * custo.getCustPassword().equalsIgnoreCase(userPass)) { isLogged = true;
+		 * System.out.println("is logged is true in the loop"); break; } else { isLogged
+		 * = false; System.out.println("is logged is false in the loop"); } iterator++;
+		 * }
+		 */
+		
 
 		for (Customer customer : jeeves) {
 
 			System.out.println(customer);
 
-			if (customer.getCustName().equalsIgnoreCase(userName) && customer.getCustPassword().equalsIgnoreCase(userPass)) {
+			if (customer.getCustName().equalsIgnoreCase(userName)
+					&& customer.getCustPassword().equalsIgnoreCase(userPass)) {
 				isLogged = true;
 				System.out.println("is logged is true in the loop");
 				break;
@@ -180,71 +186,72 @@ public class DollarsBankController {
 	}
 
 	public void custCommInterface(int iterator) {
-		Customer cust = new Customer();
+		Customer customer = new Customer();
 		SavingsAccount save = new SavingsAccount();
-		
+
+		List<Customer> jeeves = daoimpl.findAllCustomers();
 		jeeves.get(iterator).toString();
-		
-		double amount = 0;
-		System.out.println(welcome + " Customer!!!");
 
-		System.out.println("1. Deposit Amount");
+		double bal;
+		double amount;
+		int custId;
 
-		System.out.println("2. Withdraw Amount");
-
-		System.out.println("3. Funds Transfer");
-		System.out.println("4. View 5 Recent Transactions");
-		System.out.println("5. Display Customer Information");
-		System.out.println("6. Sign Out");
+		cpu.customerMenu();
 
 		commChosen = sc.nextInt();
 		sc.nextLine();
 
 		if (commChosen == 1) {
 			System.out.println("How much would you like to deposit?");
-			
+
 			amount = sc.nextDouble();
-			
+
 			System.out.println("current balance is: " + jeeves.get(iterator).getCustBalance());
-			balance = jeeves.get(iterator).getCustBalance();
-			
-			if(amount >=0) {
-				balance += save.deposit(amount);
-				jeeves.get(iterator).setCustBalance(balance);
-				System.out.println("your new balance is: "+ jeeves.get(iterator).getCustBalance());
-				//[trans saved, 2020.07.30.20.38.49] is output, but doesnt save properly
-				save.addHistory("transaction saved ");
+			// balance = jeeves.get(iterator).getCustBalance();
+
+			if (amount >= 0) {
+
+				bal = jeeves.get(iterator).getCustBalance();
+				bal += save.deposit(amount);
+				jeeves.get(iterator).setCustBalance(bal);
 				
-				jeeves.get(iterator);
-				save.printList(jeeves.get(iterator));
+				//this uses the person in the DB - test
+				daoimpl.updateBalance(jeeves.get(iterator).custBalance, customer.getCustId());
 				
-				custCommInterface(iterator);
-			}
-			
-			
-		} else if (commChosen == 2) {
-			
-			System.out.println("How much would you like to withdraw?");
-			
-			amount = sc.nextDouble();
-			
-			System.out.println("current balance is: " + jeeves.get(iterator).getCustBalance());
-			balance = jeeves.get(iterator).getCustBalance();
-			
-			if(amount >=0 && amount <= jeeves.get(iterator).getCustBalance()) {
-				balance += save.withdraw(amount);
-				jeeves.get(iterator).setCustBalance(balance);
-				
-				System.out.println("withdraw success, your new balance is: "+ jeeves.get(iterator).getCustBalance());
-				
-				//save.printList(jeeves.get(iterator).toString());
-				save.printList(jeeves.get(iterator));
+				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
+				save.printList();
+
 				custCommInterface(iterator);
 			}
 			else {
+				System.out.println("there was an issue with the transaction.");
+				custCommInterface(iterator);
+			}
+
+		} else if (commChosen == 2) {
+
+			System.out.println("How much would you like to withdraw?");
+
+			amount = sc.nextDouble();
+
+			System.out.println("current balance is: " + jeeves.get(iterator).getCustBalance());
+
+			if (amount >= 0 && amount <= jeeves.get(iterator).getCustBalance()) {
+
+				bal = jeeves.get(iterator).getCustBalance();
+				bal += save.withdraw(amount);
+				jeeves.get(iterator).setCustBalance(bal);
+				//this uses the person in the DB - test
+				daoimpl.updateBalance(jeeves.get(iterator).getCustBalance(), customer.getCustId());
 				
+				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
+				save.printList();
+				custCommInterface(iterator);
+			} else {
+
 				try {
-					System.out.println("invalid input, current funds available: " + jeeves.get(iterator).getCustBalance());
+					System.out.println(
+							"invalid input, current funds available: " + jeeves.get(iterator).getCustBalance());
 					System.out.println("Returning to customer options...");
 					Thread.sleep(2000);
 					custCommInterface(iterator);
@@ -252,26 +259,72 @@ public class DollarsBankController {
 					// log the exception.
 				}
 			}
-			
+
 		} else if (commChosen == 3) {
-			save.fundTransfer(balance, withdraw, deposit, cust.getCustAccName());
+
+			String receiverName = "";
+			Boolean userExists = false;
+
+			System.out.println("What user are you willing to transfer funds to? User Name: ");
+			receiverName = sc.nextLine().toLowerCase();
+
+			for (Customer cust : jeeves) {
+
+				if (customer.getCustName().equals(receiverName)) {
+					userExists = true;
+				}
+
+			}
+			
+			if(!userExists) {
+				System.out.println("User doesn't exist");
+				custCommInterface(iterator);
+			}
+
+			System.out.println("How much are you willing to send over to " + receiverName + "?");
+			amount = sc.nextDouble();
+			sc.nextLine();
+
+			if (amount >= 0 && amount <= jeeves.get(iterator).custBalance) {
+
+				if (jeeves.get(iterator).getCustName().equals(receiverName)) {
+					save.fundTransfer(amount, receiverName);
+					System.out.println("your current balance is: " + jeeves.get(iterator).getCustBalance());
+					custCommInterface(iterator);
+				} else {
+					System.out.println("the user name you entered isn't correct");
+					custCommInterface(iterator);
+				}
+
+			}
+			else {
+				System.out.println("there was issue with your current balance and the amount entered");
+				custCommInterface(iterator);
+			}
+
 		}
-		
+
+		//fix output. its only outputting one record at a time
 		else if (commChosen == 4) {
-			save.printList(jeeves.get(iterator));
-			System.out.println(save.getTransHistory().toString());
-			custCommInterface(iterator);
-		} 
-		
-		else if (commChosen == 5) {
 			save.getTransHistory();
 			System.out.println(save.getTransHistory());
+
+			save.printList();
 			
-			save.printList(jeeves.get(iterator));
-			//save.printList(jeeves.get(iterator).toString());
 			custCommInterface(iterator);
-		} 
-		
+		}
+
+		else if (commChosen == 5) {
+			System.out.println("What ID are you looking for? ");
+			custId = sc.nextInt();
+			sc.nextLine();
+			daoimpl.findById(custId);
+			
+			//daoimpl.findById(customer.getCustId());
+			//daoimpl.findAllCustomers();
+			custCommInterface(iterator);
+		}
+
 		else if (commChosen == 6) {
 			try {
 				System.out.println("Singing out of current user...");

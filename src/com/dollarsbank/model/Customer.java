@@ -1,14 +1,11 @@
 package com.dollarsbank.model;
 
-public class Customer {
-	
+public class Customer extends SavingsAccount{
+	public int custId;
 	public String custName;
 	public String custAddress;
 	public String custPhone;
-	public int custId;
 	public String custPassword;
-	//this is the initial deposit amount made with customer creation
-	public double custDeposAmount;
 	//this is the current balance in their account
 	public double custBalance;
 	//the name of their account
@@ -65,16 +62,6 @@ public class Customer {
 	}
 
 
-	public double getCustDeposAmount() {
-		return custDeposAmount;
-	}
-
-
-	public void setCustDeposAmount(double custDeposAmount) {
-		this.custDeposAmount = custDeposAmount;
-	}
-
-
 	public double getCustBalance() {
 		return custBalance;
 	}
@@ -93,31 +80,28 @@ public class Customer {
 	public void setCustAccName(String custAccName) {
 		this.custAccName = custAccName;
 	}
-
-
-	public Customer(String custName, String custAddress, String custPhone, int custId, String custPassword,
-			double custDeposAmount, double custBalance, String custAccName) {
-		super();
-		this.custName = custName;
-		this.custAddress = custAddress;
-		this.custPhone = custPhone;
-		this.custId = custId;
-		this.custPassword = custPassword;
-		this.custDeposAmount = custDeposAmount;
-		this.custBalance = custBalance;
-		this.custAccName = custAccName;
-	}
-
 	public Customer() {
 		super();
 	}
 
+
+	public Customer(String custName, String custAddress, String custPhone, String custPassword,
+			double custBalance, String custAccName) {
+		super();
+		this.custName = custName;
+		this.custAddress = custAddress;
+		this.custPhone = custPhone;
+		this.custPassword = custPassword;
+		this.custBalance = custBalance;
+		this.custAccName = custAccName;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Customer [custName=" + custName + ", custAddress=" + custAddress + ", custPhone=" + custPhone
-				+ ", custId=" + custId + ", custPassword=" + custPassword + ", custDeposAmount=" + custDeposAmount
-				+ ", custBalance=" + custBalance + ", custAccName=" + custAccName + "]";
+		return "Customer [custName=" + custName + ", custAddress=" + custAddress + ", custPhone="
+				+ custPhone + ", custPassword=" + custPassword + ", custBalance=" + custBalance + ", custAccName="
+				+ custAccName + "]";
 	}
-	
 	
 }
