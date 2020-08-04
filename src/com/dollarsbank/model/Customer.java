@@ -85,9 +85,10 @@ public class Customer extends SavingsAccount{
 	}
 
 
-	public Customer(String custName, String custAddress, String custPhone, String custPassword,
+	public Customer(int custId, String custName, String custAddress, String custPhone, String custPassword,
 			double custBalance, String custAccName) {
 		super();
+		this.custId = custId;
 		this.custName = custName;
 		this.custAddress = custAddress;
 		this.custPhone = custPhone;
@@ -99,9 +100,10 @@ public class Customer extends SavingsAccount{
 
 	@Override
 	public String toString() {
-		return "Customer [custName=" + custName + ", custAddress=" + custAddress + ", custPhone="
+		return "Customer [custId=" + custId + ", custName=" + custName + ", custAddress=" + custAddress + ", custPhone="
 				+ custPhone + ", custPassword=" + custPassword + ", custBalance=" + custBalance + ", custAccName="
 				+ custAccName + "]";
 	}
+
 	
 }

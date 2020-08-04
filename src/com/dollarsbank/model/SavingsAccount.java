@@ -8,6 +8,7 @@ import java.util.List;
 //this is the daoimpl
 public class SavingsAccount extends Account {
 	private double bal;
+	private double recBal;
 
 	String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
@@ -40,11 +41,13 @@ public class SavingsAccount extends Account {
 	}
 
 	@Override
-	public double fundTransfer(double amount, String receiverName) {
+	public double fundTransfer(double amount, int receiverId) {
 		
-		addHistory("Withdrew " + amount + " and transferred to " + receiverName + " as of " + timeStamp);
+		
 		
 		 bal -= amount;
+		 addHistory("Withdrew " + amount + " and transferred to " + receiverId + " as of " + timeStamp);
+		 
 		 //this amount should be used to add/subtract from accounts in controller
 		 return amount;
 	}
@@ -52,15 +55,17 @@ public class SavingsAccount extends Account {
 	@Override
 	public void addHistory(String text) {
 		
+		
+		
 		if (transHistory.size() == 5) {
 			transHistory.remove(0);
 			System.out.println("removing index 0");
 			transHistory.add(text);
-			//setTransHistory(getTransHistory());
-
+			setTransHistory(transHistory);
+			
 		} else {
 			transHistory.add(text);
-			//setTransHistory(getTransHistory());
+			setTransHistory(transHistory);
 		}
 
 	}
@@ -68,15 +73,28 @@ public class SavingsAccount extends Account {
 	//the print history isnt working
 	@Override
 	public void printList() {
+		//List<String> transHistory = new ArrayList<String>();
 		
-		getTransHistory();
 		for (String print : transHistory)
 		{
-			System.out.println("in print");
-			System.out.println(print);
+			
+			System.out.println(print.toString());
 			
 		}
-
 	}
 
+	@Override
+	public List<String> getHistories() {
+		
+		return null;
+	}
+
+	@Override
+	public double depositTrans(double amount) {
+		// TODO Auto-generated method stub
+		addHistory("Deposited " + amount + " as of " + timeStamp);
+		
+		return recBal += amount;
+	}
+	
 }

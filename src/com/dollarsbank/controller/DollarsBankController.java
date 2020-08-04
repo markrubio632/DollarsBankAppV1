@@ -8,6 +8,7 @@ import com.dollarsbank.dao.CustomerDaoImpl;
 import com.dollarsbank.model.Customer;
 import com.dollarsbank.model.SavingsAccount;
 import com.dollarsbank.utility.ConsolePrinterUtility;
+import com.dollarsbank.utility.DataGeneratorStubUtil;
 
 public class DollarsBankController {
 	// this is the controller
@@ -25,24 +26,26 @@ public class DollarsBankController {
 
 	// displays output to user
 	public static ConsolePrinterUtility cpu = new ConsolePrinterUtility();
+	
+	public static DataGeneratorStubUtil dgsu = new DataGeneratorStubUtil();
 
 	Scanner sc = new Scanner(System.in);
 	
-	int user= 0;
+	int user = 0;
 
 	static List<Customer> jeeves = new ArrayList<Customer>();
 	static {
 		CustomerDaoImpl daoimpl = new CustomerDaoImpl();
 		
-		jeeves.add(new Customer("Josh", "Dimmsdale Dimmadome", "928-888-4203", "jeeves", 320223, "[117-J]"));
+		jeeves.add(new Customer(0,"Josh", "Dimmsdale Dimmadome", "928-888-4203", "jeeves", 320223, "[117-J]"));
 		
 	}
+	
+	
 	public void controllerRunner() throws InterruptedException {
 
 		while (true) {
 			CustomerDaoImpl.getConnection();
-			//create database needs to be worked, for now working with an empty local
-			//daoimpl.createDatabase();
 			cpu.mainMenu();
 			try {
 				optChosen = sc.nextInt();
@@ -54,7 +57,7 @@ public class DollarsBankController {
 				creationInterface();
 			} else if (optChosen == 2) {
 				loginInterface();
-				custCommInterface(iterator);
+				custCommInterface(user, iterator);
 			} else if (optChosen == 3) {
 				daoimpl.shutdownDatabase();
 				System.exit(0);
@@ -69,7 +72,8 @@ public class DollarsBankController {
 	public void creationInterface() throws InterruptedException {
 		Customer cust = new Customer();
 		
-		System.out.println("Enter Details for New Account");
+		try {
+			System.out.println("Enter Details for New Account");
 
 		System.out.println("Customer Name: ");
 		cust.custName = sc.nextLine();
@@ -82,11 +86,6 @@ public class DollarsBankController {
 		System.out.println("Customer Contact Number: ");
 		cust.custPhone = sc.nextLine();
 		cust.setCustPhone(cust.custPhone);
-
-		/*
-		 * System.out.println("Customer ID: "); cust.custId = sc.nextInt();
-		 * sc.nextLine(); cust.setCustId(cust.custId);
-		 */
 
 		System.out.println("Customer Password: ");
 		cust.custPassword = sc.nextLine();
@@ -102,30 +101,30 @@ public class DollarsBankController {
 		cust.setCustAccName(cust.custAccName);
 
 		// add all the setters into a customer object list of jeeves
-		jeeves.add(new Customer(cust.getCustName(), cust.getCustAddress(), cust.getCustPhone(),
+		jeeves.add(new Customer(cust.getCustId(),cust.getCustName(), cust.getCustAddress(), cust.getCustPhone(),
 				cust.getCustPassword(), cust.getCustBalance(), cust.getCustAccName()));
 		
 		//this saves the new user into the database
 		daoimpl.saveCustomer(cust);
-		System.out.println(cust);
 
 		System.out.println("user successfully created, redirecting to login...");
+			
+		}catch (Exception e) {
+			System.out.println("User creation had an error, please check your inputs");
+			Thread.sleep(2000);
+			loginInterface();
+		}
+		
+		//redirects to the login phase
 		try {
 			Thread.sleep(2000);
 			loginInterface();
 		} catch (InterruptedException e) {
 			// log the exception.
 		}
-	}/*
-		 * // this will go to login interface else if (optChosen == 2) {
-		 * loginInterface(); } // if anything other than "1" or "2" is inserted else {//
-		 * this will put the thread to sleep for 2 seconds, then close program try {
-		 * System.out.println("Exiting Program..."); Thread.sleep(2000); } catch
-		 * (InterruptedException e) { // log the exception. }
-		 * 
-		 * System.exit(0); } }// end of the userInterface method
-		 */
+	}
 
+	// this needs to find the created IDs and pull from those
 	public void loginInterface() {
 		Customer cust = new Customer();
 		List<Customer> jeeves = daoimpl.findAllCustomers();
@@ -133,6 +132,7 @@ public class DollarsBankController {
 		String userPass = "";
 		Boolean isLogged = false;
 		iterator = 0;
+		
 
 		System.out.println("Enter Login Details");
 
@@ -147,16 +147,17 @@ public class DollarsBankController {
 		for (Customer customer : jeeves) {
 
 			System.out.println(customer);
+			
 
 			if (customer.getCustName().equalsIgnoreCase(userName)
 					&& customer.getCustPassword().equalsIgnoreCase(userPass)) {
 				isLogged = true;
-				System.out.println("is logged is true in the loop");
-				user = jeeves.get(iterator).custId;
+				user = customer.getCustId();
+				
+				//used for testing purposes to test if user and iterator were properly imported
+				//System.out.println("user is: "+user);
+				//System.out.println("iterator is "+iterator);
 				break;
-			} else {
-				isLogged = false;
-				System.out.println("is logged is false in the loop");
 			}
 			iterator++;
 		}
@@ -168,23 +169,29 @@ public class DollarsBankController {
 			} catch (InterruptedException e) {
 				// log the exception.
 			}
-			custCommInterface(iterator);
+			custCommInterface(user, iterator);
 		} else if (isLogged == false) {
 			System.out.println("The user login failed, check username and password");
 			loginInterface();
 		}
 	}
 
-	public void custCommInterface(int iterator) {
+	public void custCommInterface(int user, int iterator) {
 		Customer customer = new Customer();
 		SavingsAccount save = new SavingsAccount();
 
 		List<Customer> jeeves = daoimpl.findAllCustomers();
-		jeeves.get(iterator).toString();
+		//jeeves.get(iterator).toString();
 
 		double bal = jeeves.get(iterator).getCustBalance();
+		double recBal;
 		double amount;
 		int custId;
+		
+		int recPos = 0;
+		int transIt = 0;
+		
+		List<String> tList;
 
 		cpu.customerMenu();
 
@@ -207,23 +214,23 @@ public class DollarsBankController {
 				jeeves.get(iterator).custBalance = bal;
 				
 				//this uses the person in the DB - test
-				daoimpl.updateBalance(jeeves.get(iterator).custBalance, jeeves.get(iterator).custId);
+				daoimpl.updateBalance(jeeves.get(iterator).custBalance, user);
 				
 				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
 				save.printList();
+				
 
 				//for testing in DB
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				custCommInterface(iterator);
+				custCommInterface(user, iterator);
 			}
 			else {
 				System.out.println("there was an issue with the transaction.");
-				custCommInterface(iterator);
+				custCommInterface(user, iterator);
 			}
 
 		} else if (commChosen == 2) {
@@ -240,11 +247,17 @@ public class DollarsBankController {
 				bal += save.withdraw(amount);
 				jeeves.get(iterator).setCustBalance(bal);
 				//this uses the person in the DB - test
-				daoimpl.updateBalance(bal, jeeves.get(iterator).getCustId());
+				daoimpl.updateBalance(bal, user);
 				
 				System.out.println("success, your new balance is: " + jeeves.get(iterator).getCustBalance());
 				save.printList();
-				custCommInterface(iterator);
+				//for testing in DB
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				custCommInterface(user, iterator);
 			} else {
 
 				try {
@@ -252,64 +265,80 @@ public class DollarsBankController {
 							"invalid input, current funds available: " + jeeves.get(iterator).getCustBalance());
 					System.out.println("Returning to customer options...");
 					Thread.sleep(2000);
-					custCommInterface(iterator);
+					custCommInterface(user, iterator);
 				} catch (InterruptedException e) {
 					// log the exception.
 				}
 			}
 
 		} else if (commChosen == 3) {
+			
+			recBal = jeeves.get(recPos).getCustBalance();
 
-			String receiverName = "";
-			Boolean userExists = false;
+			int receiverId = 0;
+			boolean userExists = false;
 
-			System.out.println("What user are you willing to transfer funds to? User Name: ");
-			receiverName = sc.nextLine().toLowerCase();
+			System.out.println("What user are you willing to transfer funds to? User Id: ");
+			receiverId = sc.nextInt();
+			sc.nextLine();
 
 			for (Customer cust : jeeves) {
 
-				if (customer.getCustName().equals(receiverName)) {
+				if (cust.getCustId() == receiverId) {
+					recPos = transIt;
 					userExists = true;
 				}
-
+				transIt++;
 			}
-			
 			if(!userExists) {
-				System.out.println("User doesn't exist");
-				custCommInterface(iterator);
-			}
+					System.out.println("user doesnt exist");
+					custCommInterface(user, iterator);
+				}
 
-			System.out.println("How much are you willing to send over to " + receiverName + "?");
+			System.out.println("How much are you willing to send over to " + receiverId + "?");
 			amount = sc.nextDouble();
 			sc.nextLine();
+			
+			recBal = jeeves.get(recPos).getCustBalance();
 
-			if (amount >= 0 && amount <= jeeves.get(iterator).custBalance) {
+			if (amount >= 0 && amount <= jeeves.get(recPos).getCustBalance()) {
 
-				if (jeeves.get(iterator).getCustName().equals(receiverName)) {
-					save.fundTransfer(amount, receiverName);
-					System.out.println("your current balance is: " + jeeves.get(iterator).getCustBalance());
-					custCommInterface(iterator);
+				if (jeeves.get(recPos).getCustId() == receiverId) {
+					
+					//this withdraw function is working normally
+					bal += save.withdraw(amount);
+					jeeves.get(iterator).setCustBalance(bal);
+					jeeves.get(iterator).custBalance = bal;
+					daoimpl.updateBalance(bal, user);
+					
+					
+					recBal = recBal + save.depositTrans(amount);
+					jeeves.get(recPos).setCustBalance(recBal);
+					jeeves.get(recPos).custBalance = recBal;
+					
+					//this uses the person in the DB - test
+					daoimpl.updateBalance(recBal, receiverId);
+					System.out.println("transfer successful. user id " + receiverId + " received " + amount);
+					
+					custCommInterface(user, iterator);
 				} else {
-					System.out.println("the user name you entered isn't correct");
-					custCommInterface(iterator);
+					System.out.println("the user id you entered isn't correct");
+					custCommInterface(user, iterator);
 				}
 
 			}
 			else {
 				System.out.println("there was issue with your current balance and the amount entered");
-				custCommInterface(iterator);
+				custCommInterface(user, iterator);
 			}
 
 		}
-
-		//fix output. its only outputting one record at a time
 		else if (commChosen == 4) {
-			save.getTransHistory();
-			System.out.println(save.getTransHistory());
-
-			save.printList();
 			
-			custCommInterface(iterator);
+			tList = save.getTransHistory();
+			System.out.println(tList);
+			
+			custCommInterface(user, iterator);
 		}
 
 		else if (commChosen == 5) {
@@ -318,30 +347,49 @@ public class DollarsBankController {
 			sc.nextLine();
 			daoimpl.findById(custId);
 			
-			//daoimpl.findById(customer.getCustId());
-			//daoimpl.findAllCustomers();
-			custCommInterface(iterator);
+			custCommInterface(user, iterator);
 		}
 
 		else if (commChosen == 6) {
 			try {
-				System.out.println("Singing out of current user...");
+				System.out.println("Generating Account Stub...");
+				dgsu.stubGeneration(jeeves.get(iterator));
+				System.out.println("refreshing...");
 				Thread.sleep(2000);
-				loginInterface();
-				// insert login console page method name();
-			} catch (InterruptedException e) {
-				// log the exception.
-			}
-		} else {
-			try {
-				System.out.println("No valid option chosen. Refreshing...");
-				Thread.sleep(2000);
-				custCommInterface(iterator);
-				// insert login console page method name();
+				custCommInterface(user, iterator);
 			} catch (InterruptedException e) {
 				// log the exception.
 			}
 		}
+		else if (commChosen == 7) {
+			try {
+				System.out.println("Signing out of current user...");
+				Thread.sleep(2000);
+				loginInterface();
+			} catch (InterruptedException e) {
+				// log the exception.
+			}
+		}
+		if (commChosen == 8) {
+			try {
+				System.out.println("Closing Application...");
+				Thread.sleep(2000);
+				System.exit(0);
+			} catch (InterruptedException e) {
+				// log the exception.
+			}
+		}
+		else {
+			try {
+				System.out.println("No valid option chosen. Refreshing...");
+				Thread.sleep(2000);
+				custCommInterface(user, iterator);
+			} catch (InterruptedException e) {
+				// log the exception.
+			}
+		}
+		
+		
 	}
 
 }

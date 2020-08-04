@@ -30,9 +30,6 @@ public class CustomerDaoImpl implements CustomerDao {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
-			System.out.println("conn created");
-			//connection established, but issue with DB creation
-			
 			
 			return conn;
 		} catch (Exception e) {
@@ -41,7 +38,7 @@ public class CustomerDaoImpl implements CustomerDao {
 		return conn;
 	}
 
-	//this isnt working, look it over or just create empty local db to work with
+	//this isnt working, look it over
 	public void createDatabase() {
 		try {
 			getConnection();
@@ -102,11 +99,11 @@ public class CustomerDaoImpl implements CustomerDao {
 	}
 
 	@Override
-	public int updateBalance(double bal, int custId) {
+	public int updateBalance(double bal, int user) {
 
 		try {
 			conn = getConnection();
-			stmt = conn.prepareStatement("update bank_customers set custBalance=? where custId=" + custId);
+			stmt = conn.prepareStatement("update bank_customers set custBalance=? where custId= " + user);
 			stmt.setDouble(1,bal);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -128,38 +125,36 @@ public class CustomerDaoImpl implements CustomerDao {
 		try {
 			conn = getConnection();
 			stmt = conn.prepareStatement("select * from bank_customers");
-			ResultSet rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 			while (rs.next()) {
-				Customer customer = new Customer(rs.getString("custName"),
+				Customer customer = new Customer(rs.getInt("custId"),rs.getString("custName"),
 						rs.getString("custAddress"), rs.getString("custPhone"), rs.getString("custPassword"),
 						rs.getDouble("custBalance"), rs.getString("custAccName"));
 				
 				cList.add(customer);
-				System.out.println(customer);
+				//System.out.println(customer);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return cList;
 	}
 
 	@Override
 	public Customer findById(int custId) {
 		
+		Customer cu = new Customer();
+		
 		try {
 			conn = getConnection();
-			stmt = conn.prepareStatement("select * from bank_customers where custId= " + custId);
-			
+			stmt = conn.prepareStatement("select * from bank_customers where custId=?");
+			stmt.setInt(1, custId);
 			rs = stmt.executeQuery();
 			while (rs.next()) {
-				
-				//loops through DB to find the specific custId input
-				rs.getInt(custId);
-				
-				//prints results pulled from DB
-				System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5)+" "+rs.getDouble(6)+" "+rs.getString(7));
+				//formats the output to the console
+				System.out.println("User Id: " + rs.getInt(1)+"\n User Name: "+rs.getString(2)+"\n Address: "+rs.getString(3)+"\n Contact Number: "
+				+rs.getString(4)+"\n Password"+rs.getString(5)+"\n Balance: "+rs.getDouble(6)+"\n Account Name: "+rs.getString(7));
 				 				
 			}
 		} catch (SQLException e) {
@@ -167,6 +162,6 @@ public class CustomerDaoImpl implements CustomerDao {
 			e.printStackTrace();
 		}
 
-		return null;
+		return cu;
 	}
 }

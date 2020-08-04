@@ -39,7 +39,9 @@ public class ConsolePrinterUtility {
 		System.out.println("3. Funds Transfer");
 		System.out.println("4. View 5 Recent Transactions");
 		System.out.println("5. Display Customer Information");
-		System.out.println("6. Sign Out");
+		System.out.println("6. Generate Stub");
+		System.out.println("7. Sign Out");
+		System.out.println("8. Exit");
 	}
 
 }
